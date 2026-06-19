@@ -115,6 +115,8 @@
   }
   ol.sub li strong{color:var(--text);font-weight:500}
   .pathy{font-family:'JetBrains Mono',monospace;font-size:13px;color:#5aa9ff;background:rgba(0,48,255,.08);border:1px solid var(--border);border-radius:7px;padding:2px 7px;white-space:nowrap}
+  a.pathy{text-decoration:none;cursor:pointer;transition:background .2s,border-color .2s}
+  a.pathy:hover{background:rgba(0,48,255,.16);border-color:var(--border-hover)}
 
   /* shot placeholder */
   .shot{
@@ -361,7 +363,7 @@
       <h2>Cancele sua assinatura antiga na Hotmart <small>pra não ser cobrado em dois lugares</small></h2>
     </div>
     <ol class="sub">
-      <li>Acesse <span class="pathy">consumer.hotmart.com</span> e entre na sua conta (o e-mail da compra).</li>
+      <li>Acesse <a class="pathy" href="https://consumer.hotmart.com" target="_blank" rel="noopener">consumer.hotmart.com</a> e entre na sua conta (o e-mail da compra).</li>
       <li>Selecione o produto <strong>RenderLAB</strong>.</li>
       <li>Clique em <span class="pathy">Configurar pagamento</span>.</li>
       <li>Na próxima tela, clique em <strong>Cancelar sua assinatura</strong>.</li>
