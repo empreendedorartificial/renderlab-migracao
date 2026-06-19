@@ -1,0 +1,447 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RenderLAB — Migração da sua assinatura</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --black:#000000; --shell:#0c0c0c;
+    --surface:rgba(255,255,255,0.03);
+    --gray:#c6c6c6;
+    --blue:#0030ff; --blue-tint:#5aa9ff; --blue-glow:rgba(0,48,255,0.14);
+    --neon:#d4f81a; --neon-dark:#c2e418;
+    --text:#ebebeb; --text2:rgba(198,198,198,0.72); --text3:rgba(198,198,198,0.4);
+    --border:rgba(255,255,255,0.1); --border-hover:rgba(0,48,255,0.55);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--black);
+    color:var(--text);
+    font-family:'Space Grotesk',system-ui,sans-serif;
+    line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  /* fundo: grid sutil + orbs */
+  .bg{position:fixed;inset:0;z-index:-1;overflow:hidden}
+  .bg::before{
+    content:"";position:absolute;inset:0;
+    background-image:linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),
+                     linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);
+    background-size:46px 46px;
+    mask-image:radial-gradient(ellipse 80% 60% at 50% 0%,#000 40%,transparent 100%);
+  }
+  .orb{position:absolute;border-radius:50%;filter:blur(120px);opacity:.5}
+  .orb.a{width:520px;height:520px;background:var(--blue-glow);top:-160px;left:-120px}
+  .orb.b{width:420px;height:420px;background:rgba(198,198,198,.06);bottom:10%;right:-140px}
+
+  .shell{max-width:760px;margin:0 auto;padding:32px 22px 80px}
+
+  /* logo */
+  .logo{display:inline-flex;align-items:center}
+  .logo img{height:30px;width:auto;display:block}
+
+  .eyebrow{
+    font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.22em;
+    text-transform:uppercase;color:var(--blue-tint);margin:46px 0 18px;display:block;
+  }
+
+  h1{
+    font-weight:300;font-size:clamp(34px,6.4vw,58px);line-height:1.04;letter-spacing:-.02em;margin-bottom:20px;
+  }
+  h1 em{
+    font-style:italic;font-weight:400;
+    background:linear-gradient(100deg,#5aa9ff,var(--blue));
+    -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+  }
+  .lead{font-size:18px;color:var(--text2);max-width:60ch;margin-bottom:30px}
+  .lead strong{color:var(--text);font-weight:500}
+
+  /* badges de garantia */
+  .assure{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:14px}
+  .assure span{
+    display:inline-flex;align-items:center;gap:8px;
+    font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:.02em;
+    background:var(--surface);border:1px solid var(--border);border-radius:999px;
+    padding:9px 15px;color:var(--text);backdrop-filter:blur(16px);
+  }
+  .assure span::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--neon);box-shadow:0 0 10px var(--neon)}
+
+  /* bloco "por que" */
+  .why{
+    background:var(--surface);border:1px solid var(--border);border-radius:18px;
+    padding:24px 26px;margin:36px 0;backdrop-filter:blur(16px);
+  }
+  .why h3{font-size:13px;font-family:'JetBrains Mono',monospace;letter-spacing:.18em;text-transform:uppercase;color:var(--blue-tint);margin-bottom:12px}
+  .why p{color:var(--text2);font-size:15.5px}
+  .why p + p{margin-top:10px}
+
+  /* passos */
+  .steps-head{margin:54px 0 8px;font-size:13px;font-family:'JetBrains Mono',monospace;letter-spacing:.18em;text-transform:uppercase;color:var(--text3)}
+
+  .step{
+    position:relative;background:var(--surface);border:1px solid var(--border);
+    border-radius:22px;padding:30px 28px;margin-top:22px;backdrop-filter:blur(16px);
+    transition:border-color .25s;
+  }
+  .step:hover{border-color:var(--border-hover)}
+  .step-tag{
+    display:flex;align-items:center;gap:14px;margin-bottom:16px;
+  }
+  .num{
+    flex:none;width:46px;height:46px;border-radius:13px;display:grid;place-items:center;
+    font-family:'JetBrains Mono',monospace;font-weight:700;font-size:20px;
+    background:rgba(0,48,255,.12);border:1px solid var(--border-hover);color:#5aa9ff;
+  }
+  .step h2{font-weight:500;font-size:23px;letter-spacing:-.01em}
+  .step h2 small{display:block;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--text3);font-weight:400;margin-top:3px}
+
+  ol.sub{list-style:none;counter-reset:s;margin:6px 0 0;padding:0}
+  ol.sub li{
+    counter-increment:s;position:relative;padding:11px 0 11px 38px;color:var(--text2);font-size:15.5px;
+    border-top:1px solid var(--border);
+  }
+  ol.sub li:first-child{border-top:none}
+  ol.sub li::before{
+    content:counter(s);position:absolute;left:0;top:11px;
+    width:24px;height:24px;border-radius:7px;display:grid;place-items:center;
+    font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;
+    background:rgba(255,255,255,.05);border:1px solid var(--border);color:var(--gray);
+  }
+  ol.sub li strong{color:var(--text);font-weight:500}
+  .pathy{font-family:'JetBrains Mono',monospace;font-size:13px;color:#5aa9ff;background:rgba(0,48,255,.08);border:1px solid var(--border);border-radius:7px;padding:2px 7px;white-space:nowrap}
+
+  /* shot placeholder */
+  .shot{
+    margin-top:18px;border:1px dashed var(--border);border-radius:12px;
+    aspect-ratio:16/8;display:grid;place-items:center;text-align:center;
+    color:var(--text3);font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:.04em;
+    background:repeating-linear-gradient(45deg,rgba(255,255,255,.015) 0 12px,transparent 12px 24px);
+  }
+
+  /* CTA */
+  .cta{
+    display:inline-flex;align-items:center;gap:10px;margin-top:20px;
+    background:var(--neon);color:#101400;font-weight:700;font-size:16px;letter-spacing:.01em;
+    text-decoration:none;padding:15px 26px;border-radius:13px;
+    box-shadow:0 0 0 1px rgba(212,248,26,.5),0 12px 40px rgba(212,248,26,.22);
+    transition:transform .15s,box-shadow .2s,background .2s;
+  }
+  .cta:hover{background:var(--neon-dark);transform:translateY(-1px);box-shadow:0 0 0 1px rgba(212,248,26,.7),0 16px 50px rgba(212,248,26,.32)}
+  .cta::after{content:"→";font-family:'JetBrains Mono',monospace}
+
+  .cta.ghost{
+    background:transparent;color:var(--text);box-shadow:none;border:1px solid var(--border-hover);
+  }
+  .cta.ghost:hover{background:rgba(0,48,255,.1);box-shadow:none}
+
+  /* tip de timing */
+  .tip{
+    display:flex;gap:14px;align-items:flex-start;
+    border:1px solid var(--border-hover);background:rgba(0,48,255,.07);
+    border-radius:16px;padding:20px 22px;margin:34px 0;
+  }
+  .tip .ic{flex:none;width:30px;height:30px;border-radius:8px;display:grid;place-items:center;background:var(--blue);color:#fff;font-weight:700;font-family:'JetBrains Mono',monospace}
+  .tip p{font-size:15px;color:var(--text)}
+  .tip p strong{color:#5aa9ff}
+
+  /* faq */
+  .faq{margin-top:54px}
+  .faq > h3{font-size:13px;font-family:'JetBrains Mono',monospace;letter-spacing:.18em;text-transform:uppercase;color:var(--text3);margin-bottom:14px}
+  details{
+    background:var(--surface);border:1px solid var(--border);border-radius:14px;
+    padding:0 20px;margin-bottom:10px;backdrop-filter:blur(16px);transition:border-color .2s;
+  }
+  details[open]{border-color:var(--border-hover)}
+  summary{
+    list-style:none;cursor:pointer;padding:17px 0;font-weight:500;font-size:16px;
+    display:flex;justify-content:space-between;align-items:center;gap:16px;
+  }
+  summary::-webkit-details-marker{display:none}
+  summary::after{content:"+";font-family:'JetBrains Mono',monospace;color:var(--blue-tint);font-size:20px;transition:transform .2s}
+  details[open] summary::after{transform:rotate(45deg)}
+  details p{color:var(--text2);font-size:15px;padding:0 0 18px;max-width:64ch}
+
+  footer{
+    margin-top:60px;padding-top:30px;border-top:1px solid var(--border);
+    color:var(--text3);font-size:14px;
+  }
+  footer a{color:var(--blue-tint);text-decoration:none}
+  footer .sup{color:var(--text2);margin-bottom:6px;font-size:15px}
+
+  /* planos */
+  .plan-intro{color:var(--text2);font-size:15.5px;margin:4px 0 20px}
+  .plan-intro strong{color:var(--text);font-weight:500}
+  .toggle{display:inline-flex;align-items:center;gap:12px;margin-bottom:22px;font-family:'JetBrains Mono',monospace;font-size:13px;flex-wrap:wrap}
+  .toggle .lbl{color:var(--text3);cursor:pointer;transition:color .2s}
+  .toggle .lbl.on{color:var(--text)}
+  .switch{width:46px;height:26px;border-radius:999px;background:rgba(255,255,255,.08);border:1px solid var(--border);position:relative;cursor:pointer;transition:background .2s;flex:none}
+  .switch.on{background:var(--blue)}
+  .switch .knob{position:absolute;top:2px;left:2px;width:20px;height:20px;border-radius:50%;background:var(--text);transition:transform .2s}
+  .switch.on .knob{transform:translateX(20px)}
+  .tog-badge{font-size:11px;color:var(--neon);border:1px solid rgba(212,248,26,.4);border-radius:999px;padding:3px 9px;letter-spacing:.04em}
+
+  .plans{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:6px}
+  .plan{position:relative;background:rgba(255,255,255,.02);border:1px solid var(--border);border-radius:16px;padding:24px 18px;display:flex;flex-direction:column;transition:border-color .2s,transform .2s}
+  .plan:hover{border-color:var(--border-hover);transform:translateY(-2px)}
+  .plan.pop,.plan.best{border-color:var(--border-hover)}
+  .plan-badge{position:absolute;top:-11px;left:50%;transform:translateX(-50%);white-space:nowrap;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.08em;text-transform:uppercase;padding:4px 11px;border-radius:999px;font-weight:700}
+  .plan.pop .plan-badge{background:var(--neon);color:#101400}
+  .plan.best .plan-badge{background:var(--blue);color:#fff}
+  .plan-name{font-size:19px;font-weight:600}
+  .plan-per{font-size:11px;color:var(--text3);font-family:'JetBrains Mono',monospace;letter-spacing:.04em;text-transform:uppercase;margin-bottom:16px}
+  .plan-price{display:flex;align-items:baseline;gap:3px;margin-bottom:2px}
+  .plan-price .cur{font-size:14px;color:var(--text2)}
+  .plan-price .val{font-size:36px;font-weight:300;letter-spacing:-.02em;font-family:'Space Grotesk'}
+  .plan-price .unit{font-size:13px;color:var(--text2)}
+  .plan-bill{font-size:11px;color:var(--text3);font-family:'JetBrains Mono',monospace;min-height:15px;margin-bottom:16px}
+  .plan-cr{font-size:13px;color:#5aa9ff;font-family:'JetBrains Mono',monospace;background:rgba(0,48,255,.08);border:1px solid var(--border);border-radius:8px;padding:8px 10px;text-align:center;margin-bottom:16px}
+  .plan-feats{list-style:none;display:flex;flex-direction:column;gap:8px;margin-bottom:20px}
+  .plan-feats li{font-size:13px;color:var(--text2);display:flex;gap:8px;align-items:center}
+  .plan-feats li::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--blue-tint);flex:none}
+  .plan-btn{margin-top:auto;text-align:center;text-decoration:none;font-weight:600;font-size:14px;padding:12px;border-radius:10px;border:1px solid var(--border-hover);color:var(--text);transition:background .2s,transform .15s}
+  .plan-btn:hover{background:rgba(0,48,255,.12);transform:translateY(-1px)}
+  .plan.pop .plan-btn{background:var(--neon);color:#101400;border-color:var(--neon);box-shadow:0 8px 26px rgba(212,248,26,.18)}
+  .plan.pop .plan-btn:hover{background:var(--neon-dark)}
+
+  .biz{margin-top:14px;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:16px;background:rgba(255,255,255,.02);border:1px solid var(--border);border-radius:16px;padding:22px}
+  .biz-l .biz-tag{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--blue-tint);margin-bottom:6px}
+  .biz-l b{font-size:18px;font-weight:600}
+  .biz-l p{font-size:13px;color:var(--text2);margin-top:4px;max-width:46ch}
+  .biz a{flex:none;text-decoration:none;font-weight:600;font-size:14px;padding:12px 22px;border-radius:10px;background:var(--blue);color:#fff;transition:.2s}
+  .biz a:hover{filter:brightness(1.15)}
+
+  .plan-help{font-size:13.5px;color:var(--text3);margin-top:16px}
+  .plan-help a{color:var(--blue-tint);text-decoration:none}
+
+  @media(max-width:600px){.plans{grid-template-columns:1fr}}
+  @media(max-width:520px){
+    .step{padding:24px 18px}
+    .num{width:40px;height:40px;font-size:17px}
+    .step h2{font-size:20px}
+  }
+</style>
+</head>
+<body>
+<div class="bg"><div class="orb a"></div><div class="orb b"></div></div>
+
+<div class="shell">
+
+  <div class="logo">
+    <img src="assets/logo-renderlab-ai.png" alt="RenderLAB AI">
+  </div>
+
+  <span class="eyebrow">Comunicado · Atualização de cobrança</span>
+
+  <h1>Sua assinatura está <em>mudando de casa</em></h1>
+
+  <p class="lead">
+    Estamos migrando a cobrança do RenderLAB para o <strong>Stripe</strong>, a mesma
+    plataforma usada pelos maiores softwares do mundo. Pra você, isso significa um painel
+    próprio pra gerenciar sua assinatura, mais segurança no pagamento e cobrança em cartão
+    internacional sem dor de cabeça. Segue o passo a passo — menos de 5 minutos.
+  </p>
+
+  <div class="assure">
+    <span>Mesmo preço</span>
+    <span>Sem interrupção de acesso</span>
+    <span>Sem risco de pagar duas vezes</span>
+  </div>
+
+  <div class="why">
+    <h3>Por que estamos mudando</h3>
+    <p>A Hotmart foi ótima pra começar, mas o RenderLAB cresceu e precisa de uma estrutura
+    de cobrança feita pra software por assinatura.</p>
+    <p>No Stripe você passa a ter um painel pra ver e atualizar seu cartão quando quiser,
+    cancelar com um clique se precisar e acompanhar suas cobranças de forma transparente —
+    sem intermediário entre você e o RenderLAB.</p>
+  </div>
+
+  <p class="steps-head">São só 2 passos</p>
+
+  <!-- PASSO 1 — STRIPE (a ação que mais queremos garantir) -->
+  <div class="step">
+    <div class="step-tag">
+      <div class="num">1</div>
+      <h2>Escolha seu plano no Stripe <small>leva 1 minuto · checkout seguro</small></h2>
+    </div>
+
+    <p class="plan-intro">Selecione abaixo o <strong>mesmo plano que você já tem hoje</strong> — ou aproveite
+    pra mudar, se outro fizer mais sentido pro seu volume. O pagamento abre direto na página
+    segura do Stripe.</p>
+
+    <div class="toggle">
+      <span class="lbl on" id="togM" onclick="rlPricing(false)">Mensal</span>
+      <div class="switch" id="rlSwitch" onclick="rlPricing(!this.classList.contains('on'))"><div class="knob"></div></div>
+      <span class="lbl" id="togA" onclick="rlPricing(true)">Anual</span>
+      <span class="tog-badge">2 meses grátis</span>
+    </div>
+
+    <div class="plans">
+      <!-- BASIC -->
+      <div class="plan" data-pm="97" data-pa="81" data-ya="970"
+           data-lm="https://buy.stripe.com/5kQdR9fql5FV0ck9KJeIw0j"
+           data-la="https://buy.stripe.com/eVq4gzdid0lBe3acWVeIw0i">
+        <div class="plan-name">Basic</div>
+        <div class="plan-per">Quem está começando</div>
+        <div class="plan-price"><span class="cur">R$</span><b class="val">97</b><span class="unit">/mês</span></div>
+        <div class="plan-bill">cobrado mensalmente</div>
+        <div class="plan-cr">300 créditos todo mês</div>
+        <ul class="plan-feats">
+          <li>30 fotos 2K por mês</li>
+          <li>10 vídeos de 5s</li>
+          <li>6 upscales 4K</li>
+          <li>Sem marca d'água</li>
+        </ul>
+        <a class="plan-btn" href="https://buy.stripe.com/5kQdR9fql5FV0ck9KJeIw0j" target="_blank" rel="noopener">Assinar Basic</a>
+      </div>
+
+      <!-- STARTER -->
+      <div class="plan pop" data-pm="197" data-pa="164" data-ya="1970"
+           data-lm="https://buy.stripe.com/7sY3cvba5fgv6AIe0ZeIw0h"
+           data-la="https://buy.stripe.com/14A6oH2Dz5FVaQY3mleIw0g">
+        <div class="plan-badge">Mais popular</div>
+        <div class="plan-name">Starter</div>
+        <div class="plan-per">Para profissionais</div>
+        <div class="plan-price"><span class="cur">R$</span><b class="val">197</b><span class="unit">/mês</span></div>
+        <div class="plan-bill">cobrado mensalmente</div>
+        <div class="plan-cr">1.000 créditos todo mês</div>
+        <ul class="plan-feats">
+          <li>100 fotos 2K por mês</li>
+          <li>33 vídeos de 5s</li>
+          <li>20 upscales 4K</li>
+          <li>Suporte prioritário</li>
+        </ul>
+        <a class="plan-btn" href="https://buy.stripe.com/7sY3cvba5fgv6AIe0ZeIw0h" target="_blank" rel="noopener">Assinar Starter</a>
+      </div>
+
+      <!-- GROWTH -->
+      <div class="plan best" data-pm="397" data-pa="331" data-ya="3970"
+           data-lm="https://buy.stripe.com/aFa14n4LHfgvcZ6aONeIw0f"
+           data-la="https://buy.stripe.com/6oUbJ16TPgkzf7ebSReIw0e">
+        <div class="plan-badge">Melhor custo-benefício</div>
+        <div class="plan-name">Growth</div>
+        <div class="plan-per">Escalando volume</div>
+        <div class="plan-price"><span class="cur">R$</span><b class="val">397</b><span class="unit">/mês</span></div>
+        <div class="plan-bill">cobrado mensalmente</div>
+        <div class="plan-cr">2.500 créditos todo mês</div>
+        <ul class="plan-feats">
+          <li>250 fotos 2K por mês</li>
+          <li>83 vídeos de 5s</li>
+          <li>50 upscales 4K</li>
+          <li>Fila exclusiva</li>
+        </ul>
+        <a class="plan-btn" href="https://buy.stripe.com/aFa14n4LHfgvcZ6aONeIw0f" target="_blank" rel="noopener">Assinar Growth</a>
+      </div>
+    </div>
+
+    <!-- BUSINESS -->
+    <div class="biz">
+      <div class="biz-l">
+        <div class="biz-tag">Corporativo · B2B</div>
+        <b>Business</b>
+        <p>Para construtoras, incorporadoras e escritórios com equipe: até 5 usuários, exportação em lote, API e relatórios por projeto.</p>
+      </div>
+      <a href="https://wa.me/5544997234024?text=Ol%C3%A1!%20Quero%20um%20or%C3%A7amento%20personalizado%20do%20plano%20Business%20do%20RenderLAB%20para%20minha%20empresa." target="_blank" rel="noopener">Falar com o time →</a>
+    </div>
+
+    <p class="plan-help">Não tem certeza de qual plano você tem hoje?
+    <a href="https://wa.me/5544997234024?text=Ol%C3%A1!%20Estou%20migrando%20minha%20assinatura%20do%20RenderLAB%20para%20o%20Stripe%20e%20preciso%20de%20ajuda%20pra%20saber%20qual%20plano%20escolher." target="_blank" rel="noopener">Chama a gente no WhatsApp</a> que te ajudamos a escolher.</p>
+  </div>
+
+  <!-- PASSO 2 — CANCELAR HOTMART -->
+  <div class="step">
+    <div class="step-tag">
+      <div class="num">2</div>
+      <h2>Cancele sua assinatura antiga na Hotmart <small>pra não ser cobrado em dois lugares</small></h2>
+    </div>
+    <ol class="sub">
+      <li>Acesse <span class="pathy">consumer.hotmart.com</span> e entre na sua conta (o e-mail da compra).</li>
+      <li>Selecione o produto <strong>RenderLAB</strong>.</li>
+      <li>Clique em <span class="pathy">Configurar pagamento</span>.</li>
+      <li>Na próxima tela, clique em <strong>Cancelar sua assinatura</strong>.</li>
+      <li>Confirme clicando em <strong>Sim</strong>. Você mantém o acesso até o fim do período já pago.</li>
+    </ol>
+
+    <a class="cta ghost" href="https://consumer.hotmart.com" target="_blank" rel="noopener">Abrir minhas assinaturas na Hotmart</a>
+  </div>
+
+  <!-- TIP timing -->
+  <div class="tip">
+    <div class="ic">!</div>
+    <p><strong>Dica pra não pagar duas vezes:</strong> sua cobrança na Hotmart já está paga
+    até o fim do ciclo atual. Cancele a Hotmart assim que ativar o Stripe (Passo 1) — o
+    cancelamento interrompe só as <strong>renovações futuras</strong>, então você não perde
+    nada do que já pagou e nunca fica sem acesso.</p>
+  </div>
+
+  <!-- FAQ -->
+  <div class="faq">
+    <h3>Perguntas rápidas</h3>
+
+    <details open>
+      <summary>Vou pagar duas vezes nessa troca?</summary>
+      <p>Não. O que você já pagou na Hotmart vale até o fim do período contratado, e o
+      cancelamento na Hotmart só impede as próximas renovações. Ative o Stripe e cancele a
+      Hotmart na sequência que está tudo certo.</p>
+    </details>
+
+    <details>
+      <summary>Meu acesso ao RenderLAB vai parar em algum momento?</summary>
+      <p>Não. Seu acesso continua funcionando o tempo todo. A única coisa que muda é por
+      onde a sua assinatura é cobrada.</p>
+    </details>
+
+    <details>
+      <summary>O preço vai mudar?</summary>
+      <p>Não. Você continua pagando exatamente o mesmo valor da sua assinatura atual.</p>
+    </details>
+
+    <details>
+      <summary>Preciso fazer isso agora?</summary>
+      <p>Quanto antes, melhor — assim você garante a transição sem correria. Mas pode fazer
+      com calma seguindo os dois passos acima. Se travar em algo, fala com a gente.</p>
+    </details>
+
+    <details>
+      <summary>E se eu tiver qualquer dúvida no meio do caminho?</summary>
+      <p>É só chamar a gente no WhatsApp de sempre. A gente te acompanha até a sua
+      assinatura estar 100% migrada.</p>
+    </details>
+  </div>
+
+  <footer>
+    <p class="sup">Precisa de ajuda? Fala com a gente no WhatsApp de sempre:
+      <a href="https://wa.me/5544997234024?text=Ol%C3%A1!%20Preciso%20de%20ajuda%20com%20a%20migra%C3%A7%C3%A3o%20da%20minha%20assinatura%20do%20RenderLAB%20para%20o%20Stripe." target="_blank" rel="noopener">(44) 99723-4024</a>.</p>
+    <p>RenderLAB IA · Montani 3D</p>
+  </footer>
+
+</div>
+
+<script>
+  function rlPricing(annual){
+    document.querySelectorAll('.plan').forEach(function(p){
+      var v=p.querySelector('.val'), b=p.querySelector('.plan-bill'), a=p.querySelector('.plan-btn');
+      if(annual){
+        var ya=Number(p.dataset.ya).toLocaleString('pt-BR');
+        v.textContent=p.dataset.pa;
+        b.textContent='equivale a R$ '+p.dataset.pa+'/mês · R$ '+ya+'/ano';
+        a.href=p.dataset.la;
+      } else {
+        v.textContent=p.dataset.pm;
+        b.textContent='cobrado mensalmente';
+        a.href=p.dataset.lm;
+      }
+    });
+    document.getElementById('togM').classList.toggle('on',!annual);
+    document.getElementById('togA').classList.toggle('on',annual);
+    document.getElementById('rlSwitch').classList.toggle('on',annual);
+  }
+</script>
+</body>
+</html>
